@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Extractor</title>
+  </head>
+  <body>
+    <input type="file" id="file-input">
+    <button id="upload-button">Upload File</button>
+    <progress id="progress-bar" max="100" value="0"></progress>
+    <div id="progress-text">0%</div>
+    <script>
+      const uploadButton = document.getElementById('upload-button');
+      const fileInput = document.getElementById('file-input');
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      uploadButton.addEventListener('click', () => {
+        const files = fileInput.files;
+        const formData = new FormData();
+        formData.append('file', files[0]);
+        const request = new XMLHttpRequest();
+        request.open('POST', '/upload');
+        request.upload.addEventListener('progress', event => {
+          const percent = event.loaded / event.total * 100;
+          progressBar.value = percent;
+          progressText.innerHTML = `${percent.toFixed(0)}%`;
+        });
+        request.addEventListener('load', event => {
+          console.log(event.target.responseText);
+          alert('File uploaded successfully');
+        });
+        request.addEventListener('error', event => {
+          console.error(event);
+          alert('There was an error uploading the file');
+        });
+        request.send(formData);
+      });
+    </script>
+  </body>
+</html>
